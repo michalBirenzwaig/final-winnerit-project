@@ -1,6 +1,6 @@
 from playwright.sync_api import sync_playwright,Page, expect
 
-def test_homework():
+def test_e2e():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False, slow_mo=500)
         context = browser.new_context()
