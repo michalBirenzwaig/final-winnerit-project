@@ -19,7 +19,4 @@ def test_password_missing():
         page.goto('https://www.saucedemo.com/')
         page.locator('#user-name').fill("standard_user")
         page.get_by_role('button',name='Login').click()
-        error_message=page.locator("[data-test='error']").inner_text()
-        print(error_message)
-        expect(error_message).to_contain_text("Epic sadface: Password is required")
-        #expect(page.locator("[data-test='error']").inner_text()).to_have_text("Epic sadface: Password is required")
+        expect(page.locator("[data-test='error']")).to_contain_text("Password is required")
