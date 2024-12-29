@@ -19,4 +19,15 @@ def test_e2e():
            # price_text_list=parent_element.locator('[data-test="inventory-item-price"]').inner_text()
            # print(f"price_text_list=")
 
-
+def test_logout():
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False, slow_mo=500)
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto('https://www.saucedemo.com/')
+        page.locator('#user-name').fill("standard_user")
+        page.locator('#password').fill("secret_sauce")
+        page.get_by_role('button',name='Login').click()
+        page.get_by_role("button", name="Open Menu").click()
+        page.locator('[data-test="logout-sidebar-link"]').click()
+        expect(page).to_have_url('https://www.saucedemo.com/')

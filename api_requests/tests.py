@@ -5,18 +5,21 @@ from datetime import datetime, timedelta, timezone
 
 BASE_URL = "https://reqres.in/api"
 
+# משתמש לא נמצא
 def test_Single_user_not_found():
     response=requests.get(f"{BASE_URL}/users/{999}", verify=False)
     assert response.status_code==404
     assert response.reason=="Not Found"
     #pprint.pprint(response.reason)
 
+#התחברות בהצלחה
 def test_login_successful():
     user={"email": "eve.holt@reqres.in", "password": "cityslicka"}
     response=requests.post(f"{BASE_URL}/login",json=user, verify=False)
     assert response.status_code == 200
     assert "token" in response.json()
 
+# משתמש נרשם ללא סיסמא
 def test_register_unsuccessful():
     data = {"email": "sydney@fife"}
     response=requests.post(f"{BASE_URL}/register",json=data, verify=False)
@@ -24,10 +27,36 @@ def test_register_unsuccessful():
     assert "error" in response.json()
     assert response.json()['error']=="Missing password"
 
+# מחיקת משתמש
 def test_delete_user():
     response=requests.delete(f"{BASE_URL}/users/{2}", verify=False)
     assert response.status_code==204
 
+# בדיקה שכל היוזרים מכילים id, email, first_name, last_name, avatar
+def test_check_all_params():
+    response = requests.get(f"{BASE_URL}/users?page=2", verify=False)
+    response_data = response.json()["data"]
+    print(response_data)
+    assert response.status_code == 200
+    for user in response_data:
+        assert "id" in user
+        assert "email" in user
+        assert "first_name" in user
+        assert "last_name" in user
+        assert "avatar" in user
+
+# pytest.mark.parametrizeטסט שמקבל משתמשים ובודק את תקינות שם המשתמש עם שימוש ב
+params = [(1, "cerulean"), (3, "true red"), (5, "tigerlily")]
+@pytest.mark.parametrize("user_id, expected_name", params)
+def test_get_users(user_id, expected_name):
+    response = requests.get(f"{BASE_URL}/unknown", verify=False)
+    assert response.status_code == 200
+    response_data = response.json()
+    for item in response_data["data"]:
+       if item["id"] == user_id:
+            assert item["name"] == expected_name
+
+# עדכון משתמש
 def test_update_user():
     test_start_time = datetime.now(timezone.utc)
     print(test_start_time)
@@ -38,6 +67,14 @@ def test_update_user():
     assert response.json()['updatedAt']
     # בדיקה האם העדכון בוצע בהפרש של עד 5 שניות מזמן הרצת הטסט
     assert abs(updated_at - test_start_time) < timedelta(seconds=5)
+
+# יצירת משתמש
+def test_create_user():
+    data={ "name": "morpheus", "job": "leader" }
+    response=requests.post(f"{BASE_URL}/users/{2}",json=data, verify=False)
+    assert response.status_code==201
+    assert "id" in response.json()
+
 # def test_get_user_by_id_2(base_url):
 #     response=requests.get(f"{base_url}/2",verify=False)
 #     assert response.status_code==200
@@ -47,10 +84,9 @@ def test_update_user():
 #     assert_that(response.json()['company']).contains_key('name')
 
 #
-# params = [(3, "Clementine Bauch"), (4, "Patricia Lebsack"), (5, "Chelsey Dietrich")]
-# @pytest.mark.parametrize("user_id, user_name", params)
-# def test_get_users(user_id, user_name,base_url):
-#     response = requests.get(f"{base_url}/{user_id}",verify=False)
-#     assert response.status_code == 200
-#     assert response.json()["id"] == user_id
-#     assert response.json()["name"] == user_name
+
+
+# assert len(response.json()) == 10
+
+
+
