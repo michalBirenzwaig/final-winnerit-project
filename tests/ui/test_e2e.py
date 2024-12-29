@@ -3,6 +3,7 @@ from time import sleep
 
 from playwright.sync_api import sync_playwright,Page, expect
 
+# טסט שמוסיף מוצרים לסל ובודק את הסכום לתשלום הסופי
 def test_e2e():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False, slow_mo=500)
@@ -22,6 +23,7 @@ def test_e2e():
            # price_text_list=parent_element.locator('[data-test="inventory-item-price"]').inner_text()
            # print(f"price_text_list=")
 
+# טסט שמוסיף מוצרים לסל ואח"כ מסיר ממנו
 def test_add_to_cart_and_remove():
     with sync_playwright() as p:
         product1="Sauce Labs Backpack"
@@ -51,7 +53,7 @@ def test_add_to_cart_and_remove():
         print(cart_texts)
         assert product1 in cart_texts
 
-
+# לחיצה על logout ובדיקה שחזרנו לעמוד הראשי
 def test_logout():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False, slow_mo=500)
@@ -65,6 +67,7 @@ def test_logout():
         page.locator('[data-test="logout-sidebar-link"]').click()
         expect(page).to_have_url('https://www.saucedemo.com/')
 
+# טסט שבודק מיון מוצרים מהמחיר הנמוך לגבוה
 def test_sort_by_price():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False, slow_mo=500)
@@ -82,7 +85,7 @@ def test_sort_by_price():
         for i in range(1, len(prices)):
             assert prices[i - 1] <= prices[i]
 
-
+# טסט שלוחץ על כל מוצר ובודק שנפתח עמוד המוצר עם הפרטים הנכונים
 def test_link_product():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False, slow_mo=500)
@@ -101,6 +104,7 @@ def test_link_product():
             assert product_name==product_name_in_details_page
             page.locator('#back-to-products').click()
 
+# לחיצה על reset app state ובדיקה שאכן הסל התאפס
 def test_reset_app_state():
     with sync_playwright() as p:
         product1="Sauce Labs Backpack"
