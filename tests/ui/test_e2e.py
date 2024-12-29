@@ -1,4 +1,5 @@
 from itertools import count
+from time import sleep
 
 from playwright.sync_api import sync_playwright,Page, expect
 
@@ -82,3 +83,38 @@ def test_sort_by_price():
             assert prices[i - 1] <= prices[i]
 
 
+def test_link_product():
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False, slow_mo=500)
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto('https://www.saucedemo.com/')
+        page.locator('#user-name').fill("standard_user")
+        page.locator('#password').fill("secret_sauce")
+        page.get_by_role('button',name='Login').click()
+        list_products=page.locator('[data-test="inventory-item-name"]')
+        count_items = list_products.count()
+        for i in range(count_items):
+            product_name=list_products.nth(i).inner_text()
+            list_products.nth(i).click()
+            product_name_in_details_page=page.locator('[data-test="inventory-item-name"]').inner_text()
+            assert product_name==product_name_in_details_page
+            page.locator('#back-to-products').click()
+
+def test_reset_app_state():
+    with sync_playwright() as p:
+        product1="Sauce Labs Backpack"
+        product2="Sauce Labs Fleece Jacket"
+        browser = p.chromium.launch(headless=False, slow_mo=500)
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto('https://www.saucedemo.com/')
+        page.locator('#user-name').fill("standard_user")
+        page.locator('#password').fill("secret_sauce")
+        page.get_by_role('button', name='Login').click()
+        page.locator(f"[data-test=\"add-to-cart-{product1.replace(" ", "-").lower()}\"]").click()
+        page.locator(f"[data-test=\"add-to-cart-{product2.replace(" ", "-").lower()}\"]").click()
+        page.get_by_role("button", name="Open Menu").click()
+        page.locator('#reset_sidebar_link').click()
+        page.locator('[data-test="shopping-cart-link"]').click()
+        assert page.locator(".cart_item").count() == 0
