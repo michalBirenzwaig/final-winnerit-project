@@ -2,7 +2,6 @@ import pytest
 import requests
 from datetime import datetime, timedelta, timezone
 
-
 BASE_URL = "https://reqres.in/api"
 
 # משתמש לא נמצא
@@ -12,25 +11,19 @@ def test_Single_user_not_found():
     assert response.reason=="Not Found"
     #pprint.pprint(response.reason)
 
-#התחברות בהצלחה
-def test_login_successful():
-    user={"email": "eve.holt@reqres.in", "password": "cityslicka"}
-    response=requests.post(f"{BASE_URL}/login",json=user, verify=False)
+# שליפת משתמש
+def test_get_user():
+    id=3
+    response=requests.get(f"{BASE_URL}/users/{id}",verify=False)
     assert response.status_code == 200
-    assert "token" in response.json()
+    assert response.json()["data"]["id"]==id
+    assert "first_name" in response.json()["data"]
+    assert "last_name" in response.json()["data"]
 
-# משתמש נרשם ללא סיסמא
-def test_register_unsuccessful():
-    data = {"email": "sydney@fife"}
-    response=requests.post(f"{BASE_URL}/register",json=data, verify=False)
-    assert response.status_code==400
-    assert "error" in response.json()
-    assert response.json()['error']=="Missing password"
-
-# מחיקת משתמש
-def test_delete_user():
-    response=requests.delete(f"{BASE_URL}/users/{2}", verify=False)
-    assert response.status_code==204
+# בדיקת כמות היוזרים
+def test_count_users():
+    response=requests.get(f"{BASE_URL}/users?delay=3",verify=False)
+    assert len(response.json()["data"]) == 6
 
 # בדיקה שכל היוזרים מכילים id, email, first_name, last_name, avatar
 def test_check_all_params():
@@ -56,6 +49,35 @@ def test_get_users(user_id, expected_name):
        if item["id"] == user_id:
             assert item["name"] == expected_name
 
+# התחברות בהצלחה עם טוקן
+def test_login_successful():
+    user={"email": "eve.holt@reqres.in", "password": "cityslicka"}
+    response=requests.post(f"{BASE_URL}/login",json=user, verify=False)
+    assert response.status_code == 200
+    assert "token" in response.json()
+
+# משתמש נרשם ללא סיסמא
+def test_register_unsuccessful():
+    data = {"email": "sydney@fife"}
+    response=requests.post(f"{BASE_URL}/register",json=data, verify=False)
+    assert response.status_code==400
+    assert "error" in response.json()
+    assert response.json()['error']=="Missing password"
+
+# יצירת משתמש
+def test_create_user():
+    data={ "name": "morpheus", "job": "leader" }
+    response=requests.post(f"{BASE_URL}/users/{2}",json=data, verify=False)
+    assert response.status_code==201
+    assert "id" in response.json()
+    assert "morpheus"==response.json()["name"]
+    assert "leader"==response.json()["job"]
+
+# מחיקת משתמש
+def test_delete_user():
+    response=requests.delete(f"{BASE_URL}/users/{2}", verify=False)
+    assert response.status_code==204
+
 # עדכון משתמש
 def test_update_user():
     test_start_time = datetime.now(timezone.utc)
@@ -68,12 +90,7 @@ def test_update_user():
     # בדיקה האם העדכון בוצע בהפרש של עד 5 שניות מזמן הרצת הטסט
     assert abs(updated_at - test_start_time) < timedelta(seconds=5)
 
-# יצירת משתמש
-def test_create_user():
-    data={ "name": "morpheus", "job": "leader" }
-    response=requests.post(f"{BASE_URL}/users/{2}",json=data, verify=False)
-    assert response.status_code==201
-    assert "id" in response.json()
+
 
 # def test_get_user_by_id_2(base_url):
 #     response=requests.get(f"{base_url}/2",verify=False)
@@ -86,7 +103,7 @@ def test_create_user():
 #
 
 
-# assert len(response.json()) == 10
+
 
 
 
