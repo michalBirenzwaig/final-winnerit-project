@@ -90,7 +90,10 @@ def test_update_user():
     # בדיקה האם העדכון בוצע בהפרש של עד 5 שניות מזמן הרצת הטסט
     assert abs(updated_at - test_start_time) < timedelta(seconds=5)
 
-
+# def test_NIS():
+#     data = {"jj"}
+#     response=requests.put(f"{BASE_URL}/users/29000",json=data, verify=False)
+#     print(response.json())
 
 # def test_get_user_by_id_2(base_url):
 #     response=requests.get(f"{base_url}/2",verify=False)
