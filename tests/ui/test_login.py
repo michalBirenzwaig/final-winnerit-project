@@ -3,51 +3,29 @@ import utils.configs as configs
 from pages.login_page import LoginPage
 import pytest
 
-# @pytest.fixture
-# def login_page(page: Page):
-#     return LoginPage(page)
-# def test_successful_login():
-#     with sync_playwright() as p:
-#         browser = p.chromium.launch(headless=False, slow_mo=500)
-#         context = browser.new_context()
-#         page = context.new_page()
-#         page.goto('https://www.saucedemo.com/')
-#         page.locator('#user-name').fill("standard_user")
-#         page.locator('#password').fill("secret_sauce")
-#         page.get_by_role('button',name='Login').click()
-#         expect(page).to_have_url('https://www.saucedemo.com/inventory.html')
 
 def test_successful_login(login_page):
     login_page.navigate_to(configs.base_url)
-    login_page.login_to_application(configs.standard_user, configs.correct_password)
+    login_page.fill_username_field(configs.standard_user)
+    login_page.fill_password_field(configs.correct_password)
+    login_page.click_login_button()
+    login_page.validate_url(configs.products_url)
 
-# def test_password_missing():
-#     with sync_playwright() as p:
-#         browser = p.chromium.launch(headless=False, slow_mo=500)
-#         context = browser.new_context()
-#         page = context.new_page()
-#         page.goto('https://www.saucedemo.com/')
-#         page.locator('#user-name').fill("standard_user")
-#         page.get_by_role('button',name='Login').click()
-#         expect(page.locator("[data-test='error']")).to_contain_text("Password is required")
-#
-# def test_access_check():
-#     with sync_playwright() as p:
-#         browser = p.chromium.launch(headless=False, slow_mo=500)
-#         context = browser.new_context()
-#         page = context.new_page()
-#         page.goto('https://www.saucedemo.com/inventory.html')
-#         expect(page).to_have_url('https://www.saucedemo.com/')
-#         expect(page.locator("[data-test='error']")).to_contain_text("You can only access '/inventory.html' when you are logged in.")
-#
-# def test_refresh_page():
-#     with sync_playwright() as p:
-#         browser = p.chromium.launch(headless=False, slow_mo=500)
-#         context = browser.new_context()
-#         page = context.new_page()
-#         page.goto('https://www.saucedemo.com/')
-#         page.locator('#user-name').fill("standard_user")
-#         page.locator('#password').fill("secret_sauce")
-#         page.get_by_role('button',name='Login').click()
-#         page.reload(wait_until="load")
-#         expect(page).to_have_url('https://www.saucedemo.com/inventory.html')
+def test_password_missing(login_page):
+    login_page.navigate_to(configs.base_url)
+    login_page.fill_username_field(configs.standard_user)
+    login_page.click_login_button()
+    login_page.validate_error_message("Password is required")
+
+def test_access_check(login_page):
+    login_page.navigate_to(configs.products_url)
+    login_page.validate_url(configs.base_url)
+    login_page.validate_error_message("You can only access '/inventory.html' when you are logged in.")
+
+def test_refresh_page(page: Page,login_page):
+    login_page.navigate_to(configs.base_url)
+    login_page.fill_username_field(configs.standard_user)
+    login_page.fill_password_field(configs.correct_password)
+    login_page.click_login_button()
+    page.reload(wait_until="load")
+    login_page.validate_url(configs.products_url)

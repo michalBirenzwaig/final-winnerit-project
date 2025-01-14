@@ -15,6 +15,8 @@ def test_e2e():
         page.locator('#password').fill("secret_sauce")
         page.get_by_role('button',name='Login').click()
         products_list = page.locator('[data-test="inventory-item-name"]')
+        product_item = page.locator('[data-test="inventory-item-description"]',has_text=product1)
+        # price_text=product_item.locator("").
         products_count = products_list.count()
         #for i in range(products_count):
          #   product_text = products_list.nth(i).inner_text()

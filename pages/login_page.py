@@ -1,16 +1,26 @@
 from playwright.sync_api import Page, expect
+from pages.base_page import BasePage
 
-class LoginPage:
+class LoginPage(BasePage):
     def __init__(self, page: Page):
+        super().__init__(page)
         self.__page = page
         self.__username_field=page.locator('#user-name')
         self.__password_field=page.locator('#password')
         self.__login_button=page.get_by_role('button',name='Login')
+        self.__error_message=page.locator("[data-test='error']")
 
     def navigate_to(self, url: str):
             self.__page.goto(url)
 
-    def login_to_application(self, username: str, password: str):
+    def fill_username_field(self, username: str):
         self.__username_field.fill(username)
+
+    def fill_password_field(self, password: str):
         self.__password_field.fill(password)
+
+    def click_login_button(self):
         self.__login_button.click()
+
+    def validate_error_message(self, error_message: str):
+            expect(self.__error_message).to_contain_text(error_message)
