@@ -1,8 +1,5 @@
 from playwright.sync_api import Page, expect
 import utils.configs as configs
-from pages.login_page import LoginPage
-import pytest
-
 
 def test_successful_login(login_page):
     login_page.navigate_to(configs.base_url)
