@@ -55,14 +55,14 @@ def test_sort_by_price(login_to_app,login_page,products_page):
 
 # טסט שלוחץ על כל מוצר ובודק שנפתח עמוד המוצר עם הפרטים הנכונים
 def test_link_product(login_to_app,login_page,products_page):
-         list_products=products_page.gat_all_items()
-         count_items = list_products.count()
-         for i in range(count_items):
-              product_name=list_products.nth(i).inner_text()
-              list_products.nth(i).click()
-              product_name_in_details_page=products_page.get_product_name()
-              assert product_name==product_name_in_details_page
-              products_page.click_back_to_products()
+    list_products=products_page.gat_all_items()
+    count_items = list_products.count()
+    for i in range(count_items):
+        product_name=list_products.nth(i).inner_text()
+        list_products.nth(i).click()
+        product_name_in_details_page=products_page.get_product_name()
+        assert product_name==product_name_in_details_page
+        products_page.click_back_to_products()
 
 # לחיצה על reset app state ובדיקה שאכן הסל התאפס
 def test_reset_app_state(login_to_app,login_page,products_page):
