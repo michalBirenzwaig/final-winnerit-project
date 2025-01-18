@@ -1,3 +1,4 @@
+import allure
 from playwright.sync_api import Page, expect
 from pages.base_page import BasePage
 
@@ -11,16 +12,21 @@ class LoginPage(BasePage):
         self.__error_message=page.locator("[data-test='error']")
 
     def navigate_to(self, url: str):
+        with allure.step(f"Navigating to url: {url}"):
             self.__page.goto(url)
 
     def fill_username_field(self, username: str):
-        self.__username_field.fill(username)
+        with allure.step(f"Login to app with username: {username}"):
+            self.__username_field.fill(username)
 
     def fill_password_field(self, password: str):
-        self.__password_field.fill(password)
+        with allure.step(f"Login to app with password: {password}"):
+            self.__password_field.fill(password)
 
     def click_login_button(self):
-        self.__login_button.click()
+        with allure.step("Click on login button"):
+            self.__login_button.click()
 
     def validate_error_message(self, error_message: str):
+        with allure.step(f"Validating that error message is: {error_message}"):
             expect(self.__error_message).to_contain_text(error_message)
