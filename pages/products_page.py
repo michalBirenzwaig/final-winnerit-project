@@ -1,5 +1,6 @@
 from playwright.sync_api import Page, expect
 from pages.base_page import BasePage
+import allure
 
 class ProductsPage(BasePage):
     def __init__(self, page: Page):
@@ -17,16 +18,23 @@ class ProductsPage(BasePage):
         self.__back_to_products_link=page.locator('#back-to-products')
 
     def add_to_chart_by_product_name(self,product:str):
-        self.__page.locator(f"[data-test=\"add-to-cart-{product.replace(" ", "-").lower()}\"]").click()
+        with allure.step(f"Adds to the cart: {product}"):
+            self.__page.locator(f"[data-test=\"add-to-cart-{product.replace(" ", "-").lower()}\"]").click()
 
     def remove_from_chart_by_product_name(self, product: str):
-        self.__page.locator(f"[data-test=\"remove-{product.replace(" ", "-").lower()}\"]").click()
+        with allure.step(f"Remove from the cart: {product}"):
+            self.__page.locator(f"[data-test=\"remove-{product.replace(" ", "-").lower()}\"]").click()
 
     def click_cart(self):
-        self.__shopping_cart_link.click()
+        with allure.step("Click on cart"):
+            self.__shopping_cart_link.click()
 
     def count_items_in_cart(self):
-        return self.__items_in_cart.count()
+        with allure.step("Items in cart"):
+            items_in_cart= self.__items_in_cart.count()
+            allure.attach(f"Returns the number of items in the cart: {items_in_cart}", name="items_in_cart",
+                          attachment_type=allure.attachment_type.TEXT)
+            return items_in_cart
 
     def get_list_products_names_in_cart(self):
         return [self.__item_name.nth(i).inner_text() for i in range(self.__item_name.count())]

@@ -1,6 +1,7 @@
 from playwright.sync_api import Page, expect
 from pages.base_page import BasePage
 from faker import Faker
+import allure
 
 class CheckoutStepOnePage(BasePage):
     def __init__(self, page: Page):
@@ -13,10 +14,12 @@ class CheckoutStepOnePage(BasePage):
 
 
     def fill_details_with_faker(self):
-        fake = Faker()
-        self.__first_name_field.fill(fake.first_name())
-        self.__last_name_field.fill(fake.last_name())
-        self.__zip_field.fill(fake.zipcode())
+        with allure.step("Filling in first name, last name, and zip code using the Faker library"):
+            fake = Faker()
+            self.__first_name_field.fill(fake.first_name())
+            self.__last_name_field.fill(fake.last_name())
+            self.__zip_field.fill(fake.zipcode())
 
     def click_continue(self):
-        self.__continue_button.click()
+        with allure.step("Click on continue button"):
+            self.__continue_button.click()
