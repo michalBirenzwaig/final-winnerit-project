@@ -9,7 +9,7 @@ def login_to_app(login_page):
     login_page.fill_password_field(configs.correct_password)
     login_page.click_login_button()
 
-# טסט שמוסיף מוצרים לסל ובודק את הסכום לתשלום הסופי
+# טסט שמוסיף מוצרים לסל ובודק את הסכום לתשלום  הסופי
 @allure.feature("E2E")
 def test_order_and_payment(login_to_app,login_page,products_page,cart_page,
                            checkout_step_one_page,checkout_step_two_page,checkout_coplete_page):
