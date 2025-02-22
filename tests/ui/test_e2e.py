@@ -1,6 +1,7 @@
 import utils.configs as configs
 import pytest
 import allure
+import pytest
 
 @pytest.fixture()
 def login_to_app(login_page):
@@ -11,6 +12,7 @@ def login_to_app(login_page):
 
 # טסט שמוסיף מוצרים לסל ובודק את הסכום לתשלום  הסופי
 @allure.feature("E2E")
+@pytest.mark.regression
 def test_order_and_payment(login_to_app,login_page,products_page,cart_page,
                            checkout_step_one_page,checkout_step_two_page,checkout_coplete_page):
     sum=0
